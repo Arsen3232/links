@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="links_container">
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>     
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    
+            <h1>Редактирование данных</h1>
+
+            <div class="links_item">
+
+                <form  class="linkss" method="post">
+                    
+                    <div><p>Короткая ссылка</p><input type="text" name="short_link" value='{{ short }}'></div>
+                    <div><p>Длинная ссылка</p><input type="text" name="long_link" value="{{ long }}"></div>
+                    <div><p>Доступ</p><select name="level" id="level" value="{{ access }}">
+                        {% set counter=0 %}
+                        {% for key, elem in accesses %}
+                        {% if key == access %}
+                        <option selected value="{{ counter }}">{{ elem }}</option>
+                        {% else %}
+                        <option value="{{ key }}">{{ elem }}</option>
+                        {% endif %}
+                        {% endfor %}
+                    </select></div>
+                    <div>
+                        <form action="/edit_link" method="get">
+                            <p><button class="edit">Изменить</button> </p>
+                        </form>
+                    </div>
+
+                </form>
+
+
+            </div>
+
+
+
+</div>
+
+{% endblock %}

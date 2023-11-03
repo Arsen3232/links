@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<div class="profile_container">
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+
+    <div class="forms">
+    <h3>Добро пожаловать в профиль</h3>
+
+    
+    <form action="/mylinks" class="form">
+        <button>Мои ссылки</button>
+    </form>
+    <form action="/logout" class="form">
+        <button>Выйти из аккаунта</button>
+    </form>
+    </div>
+
+</div>
+
+{% endblock %}

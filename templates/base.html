@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="static/style.css">
+</head>
+<body>
+    <header>
+        <div class="nav_boss"></div>
+        <nav>
+            {% if flag %}
+            <a href="/index">Главная</a>
+            <a href="/profile">Профиль</a>
+            {% else %}
+            {% for elem in menu  %}
+            <a href="{{ elem.url }}">{{ elem.name }}</a>
+            {% endfor %}
+            {% endif %}
+            <div id="indicator"></div>
+        </nav>
+    </header>
+    <div class="loader"></div>
+
+    <main>
+        {% block main %}{% endblock %}
+    </main>
+</body>
+</html>

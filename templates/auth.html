@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block main %}
+
+<form method="post" class="reg_container">
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+            <div class="message">
+                {{ message }}
+            </div>     
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="reg_form">
+        <h1>Авторизация</h1>
+        <p>Авторизуйтесь, чтобы получить все возможности сервиса
+        </p>
+        <input type="text" name="name" placeholder="Логин">
+        <input type="text" name="pass" placeholder="Пароль">
+        <button>Войти</button>
+        <p>Нет аккаунта? <a href="/reg">Зарегистрироваться</a></p>
+
+    </div>
+</form>
+
+{% endblock %}
+
+
+
