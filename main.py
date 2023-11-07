@@ -1,7 +1,7 @@
 import flask_login
 from flask import request, redirect, render_template, url_for, session, make_response, current_app
 import routes
-import app
+from __init__ import app
 from flask_login import LoginManager
 import database
 from werkzeug.security import generate_password_hash, check_password_hash

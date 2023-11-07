@@ -37,8 +37,9 @@ try:
 
     def authorization(login, pswrd):
         res = cursor.execute('''select * from users where login=?''', (login,)).fetchone()
-        if len(res) > 1 and check_password_hash(res[2], pswrd):
-            return res
+        if res != None:
+            if len(res) > 1 and check_password_hash(res[2], pswrd):
+                return res
         return res
 
     def register(login, pswrd):
@@ -98,7 +99,6 @@ try:
     
     def getLinks(id):
         res = cursor.execute('''SELECT * FROM links WHERE id=?''',(id , )).fetchall()
-        print(res)
         return res
     
     def delLinks(id):

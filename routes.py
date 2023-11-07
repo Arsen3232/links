@@ -2,15 +2,28 @@ from flask import request, redirect, render_template, url_for, session, flash, m
 from werkzeug.security import generate_password_hash, check_password_hash
 import database
 import sqlite3, uuid, hashlib, random
-from pack import app
+from __init__ import app
 from main import UserLogin
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
+
 
 menu = [
     {'name': 'Главная', 'url': '/index'},
     {'name': 'Вход', 'url': '/auth'},
     {'name': 'Регистрация', 'url': '/reg'}
 ]
+# with app.app_context():
+#     if session.get('user') is not None:
+#         menu = [
+#             {'name': 'Главная', 'url': '/index'},
+#             {'name': 'Вход', 'url': '/auth'},
+#             {'name': 'Регистрация', 'url': '/reg'}
+#         ]
+#     else:
+#         menu = [
+#             {'name': 'Главная', 'url': '/index'},
+#             {'name': 'Профиль', 'url': '/profile'},
+#         ]
 
 flag = None
 
@@ -18,18 +31,13 @@ flag = None
 @app.route("/<short>", methods=['GET', 'POST'])
 def link(short):
     res = database.checkLinks(short)
-    print(res)
     if len(res) > 0:
-        print('Ссылка существует')
         short = res[0][2]
         long = res[0][1]
-        print(res)
         if res[0][3] == 1:
             database.updateCount(res[0][0], res[0][4])
-            print('1')
             return redirect(long)
         elif res[0][3] == 2:
-            print('2')
             database.updateCount(res[0][0], res[0][4])
             session['next'] = long
             session['access'] = 2
@@ -59,7 +67,6 @@ def index():
         id = current_user.get_id()
         res = database.addLinks(id, long_link, short_link, level)
         if res:
-            # flash('Ссылка успешно создана, можете посмотреть ее статистику в профиле', 'succes')
             return redirect(url_for('mylinks'))
         else:
             flash('Не удалось создать ссылку', 'error')
@@ -126,22 +133,24 @@ def auth():
         login = request.form.get('name')
         pswrd = request.form.get('pass')
         user = database.authorization(login, pswrd)
-        if len(user) > 1:
-            userLogin = UserLogin().create(user)
-            login_user(userLogin)
-            flag = True
-            # flag = False
-        if session.get('next') is not None:
-                long = session['next']
-                session.pop('next')
-                if session['access'] == 2:
-                    return redirect(long)
-                elif session['access'] == 3:
-                    if session['link_owner'] == session['user']:
+        if user != None:
+            if session.get('next') is not None:
+                    long = session['next']
+                    session.pop('next')
+                    if session['access'] == 2:
                         return redirect(long)
-                    else:
-                        return('Вам закрыт доступ к данной ссылке')
-                return redirect(request.args.get('next') or url_for('index', flag=flag))
+                    elif session['access'] == 3:
+                        if session['link_owner'] == session['user']:
+                            return redirect(long)
+                        else:
+                            return('Вам закрыт доступ к данной ссылке')            
+            if len(user) > 1:
+                userLogin = UserLogin().create(user)
+                login_user(userLogin)
+                flag = True
+                return redirect(url_for('index'))
+
+            return redirect(request.args.get('next') or url_for('index', flag=flag))
         else:
             flash('Данные введены неверно')
         return render_template('auth.html', menu=menu, flag=flag)
@@ -179,8 +188,6 @@ def mylinks():
     if del_btn == 'Yes':
         database.delLinks(id)
     if btn == 'Yes':
-        # print('ersfsd')
-        print(id)
         session['id_link'] = id
         return redirect(url_for('editLink'))
     return render_template('mylinks.html', menu=menu, flag=flag, res=res, access=access)
@@ -189,10 +196,8 @@ def mylinks():
 @login_required
 def editLink():
     global flag
-    print(session['id_link'])
     res = database.getLinks(session['id_link'])
     accesses = database.getAccess()
-    print(res)
     id = res[0][0]
     long = res[0][1]
     short = res[0][2]
